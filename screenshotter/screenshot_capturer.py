@@ -44,13 +44,13 @@ class UrlboxCapturer(object):
 
     def download_screenshots(self):
         # Get the current time here, and use the same time for naming all screenshots
-        now_dt = datetime.datetime.now()
+        now_dt = datetime.datetime.now(datetime.timezone.utc)
 
         for website in self.websites:
             url = self._build_urlbox_url({
                 'url': website,
                 'delay': 5000,
-                'ttl': 1 * 60, # 5 minutes
+                'ttl': 1 * 60,
             })
 
             if not os.path.exists(self.destination_dir):
