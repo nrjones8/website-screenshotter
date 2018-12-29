@@ -1,0 +1,4 @@
+set_api_env_vars.sh
+screenshotter-py3-env/
+local-fab-env/
+*.pyc

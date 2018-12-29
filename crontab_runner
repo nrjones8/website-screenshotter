@@ -1,0 +1,5 @@
+SHELL=/bin/bash
+#URLBOX_API_KEY=""
+#URLBOX_API_SECRET=""
+MAILTO=""
+2 * * * * source /home/ubuntu/nj-src/screenshotter-env/bin/activate  >> /home/ubuntu/nj-logs/screenshotter.log 2>&1 && python /home/ubuntu/nj-src/screenshotter/lambda_runner.py --log_file /home/ubuntu/nj-logs/screenshotter.log >> /home/ubuntu/nj-logs/screenshotter.log 2>&1
