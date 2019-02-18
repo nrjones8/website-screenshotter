@@ -8,6 +8,7 @@ import boto3
 logger = logging.getLogger(__name__)
 
 UTC = timezone('UTC')
+S3_OBJECT_TEMPLATE = 'raw-screenshots/{org}/{year}/{month}/{day}/{hour}/{minute}/screenshot.png'
 
 def upload_to_s3(s3_client, local_path, bucket, object_name, metadata={}):
     content = open(local_path, 'rb')
@@ -48,20 +49,18 @@ def parse_object_name(object_name):
     news_org = parts[0]
     timestamp = float(parts[1].split('.')[0])
     as_datetime = datetime.datetime.fromtimestamp(timestamp, UTC)
-    # logger.info 'obj: {}, org: {}, ts string: {}. datetime: {}'.format(object_name, news_org, timestamp, as_datetime)
 
     return news_org, as_datetime
 
-def get_s3_pathes_for_date_range(s3_client, bucket, object_prefix, start_date, end_date):
+def get_s3_pathes_for_obj_prefix(s3_client, bucket, object_prefix):
     """
     s3_client
     bucket
     object_prefix - string, prefix used to search objects. Only objects w/ this prefix are processed
-    start_date - datetime
-    end_date - datetime
 
     """
-    all_objects = {}
+    all_objects = []
+    num_objects = 0
     more_objects = True
     next_token = None
 
@@ -79,38 +78,10 @@ def get_s3_pathes_for_date_range(s3_client, bucket, object_prefix, start_date, e
 
         for obj in response['Contents']:
             full_key_path = obj['Key']
-            # The key includes the Prefix from above, but we really only want to "file" name. S3
-            # objects aren't really files, but you get the idea
-            final_name = full_key_path.split(object_prefix)[1]
-            news_org, timestamp = parse_object_name(final_name)
-            if news_org is None:
-                logger.info('Skipping key "{}"'.format(full_key_path))
-                continue
-
-            if timestamp > start_date and timestamp < end_date:
-                if news_org not in all_objects:
-                    all_objects[news_org] = []
-                all_objects[news_org].append(full_key_path)
+            all_objects.append(full_key_path)
+        if num_objects % 20 == 0:
+            print('Have {} objects so far'.format(len(all_objects)))
+            print('Last one was: {}'.format(full_key_path))
 
 
     return all_objects
-
-
-if __name__ == '__main__':
-    logger.info('hey hai hello')
-    # start_date = datetime.datetime(2017, 8, 9)
-    # end_date = datetime.datetime(2017, 8, 10)
-    # s3_client = boto3.client('s3')
-    # matches = get_s3_pathes_for_date_range(
-    #     s3_client, 'news-screenshots-bucket', 'raw-screenshots/screenshots/', start_date, end_date
-    # )
-
-    # # news org, s3 path, timestamp
-
-    # for org, obj in matches.iteritems():
-    #     logger.info org
-    #     logger.info obj
-    #     logger.info '--------'
-
-
-

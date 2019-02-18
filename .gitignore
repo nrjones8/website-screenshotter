@@ -1,4 +1,6 @@
 .DS_Store
+# this is too confusing and unhelpful at the moment
+deploying.md
 set_api_env_vars.sh
 screenshotter-py3-env/
 local-fab-env/

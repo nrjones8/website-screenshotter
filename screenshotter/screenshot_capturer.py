@@ -87,6 +87,8 @@ class UrlboxCapturer(object):
                 # we don't really care how efficient this is, it's not blocking anything
                 # upload_to_s3(local_path)
                 logger.info('Done with {}, saved to {}'.format(website, local_path))
+                os.remove(local_path)
+                logger.info('And now removed from local path {}'.format(local_path))
             else:
                 logger.info('Not actually saving to S3, would have saved to {}'.format(s3_object_name))
             time.sleep(5)
