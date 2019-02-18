@@ -1,4 +1,6 @@
+.DS_Store
 set_api_env_vars.sh
 screenshotter-py3-env/
 local-fab-env/
+old_unused/
 *.pyc
