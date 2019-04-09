@@ -18,6 +18,7 @@ def upload_to_s3(s3_client, local_path, bucket, object_name, metadata={}):
     response = s3_client.put_object(
         Bucket=bucket,
         Body=content,
+        ContentType='image/png',
         Key=object_name,
         # Should these be tags or metadata?
         Metadata=metadata_with_str_kvs
