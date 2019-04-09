@@ -1,5 +1,12 @@
 ## News Homepage Archive
-Welcome! This project aims to provide a visual representation of how different media organizations cover various topics. Screenshots of the homepages of five different news organizations are taken once per hour, and made public thereafter. If you would like to access this archive, read on!
+Welcome! This project aims to provide a visual representation of how different media organizations cover various topics. Screenshots of the homepages of five different news organizations are taken once per hour, and made public thereafter. As an example, here are the homepages of cnn.com and foxnews.com the morning after the summary of Robert Mueller's report was released:
+
+cnn.com             |  foxnews.com
+:-------------------------:|:-------------------------:
+![](sample-images/cnn.com_morning_after_mueller.png)  |  ![](sample-images/foxnews.com_morning_after_mueller.png)
+
+
+If you would like to access this archive, read on!
 
 ## How to access screenshots
 The screenshots are available as `.png`s, and can be accessed directly via a URL based on the time the screenshot was taken and the website. All follow the same format of:
