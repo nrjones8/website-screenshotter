@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 UTC = timezone('UTC')
 S3_OBJECT_TEMPLATE = 'raw-screenshots/{org}/{year}/{month}/{day}/{hour}/{minute}/screenshot.png'
 
-def upload_to_s3(s3_client, local_path, bucket, object_name, metadata={}):
+def upload_to_s3(s3_client, local_path, bucket, object_name, metadata={}, content_type='image/png'):
     content = open(local_path, 'rb')
 
     # S3 Metadata needs to be string K/V pairs
@@ -18,7 +18,7 @@ def upload_to_s3(s3_client, local_path, bucket, object_name, metadata={}):
     response = s3_client.put_object(
         Bucket=bucket,
         Body=content,
-        ContentType='image/png',
+        ContentType=content_type,
         Key=object_name,
         # Should these be tags or metadata?
         Metadata=metadata_with_str_kvs
