@@ -8,6 +8,7 @@ import shutil
 import time
 import urllib
 
+from format_converter import convert_to_jpeg
 from s3_uploader import upload_to_s3
 
 logger = logging.getLogger(__name__)
@@ -66,9 +67,11 @@ class UrlboxCapturer(object):
             }
             # TODO - fix timezone!
             s3_object_name = S3_OBJECT_TEMPLATE.format(**object_template_data)
+            jpeg_s3_object_name = s3_object_name.replace('.png', '.jpeg')
 
             # change thisss
             local_path = '{}/{}_{}.png'.format(self.destination_dir, website, now)
+            jpeg_local_path = local_path.replace('.png', '.jpeg')
             # this is a janky way to do it, but S3 doesn't have built-in support for streaming large
             # files from memory to S3. This package seems to do it:
             # https://github.com/RaRe-Technologies/smart_open
@@ -84,11 +87,21 @@ class UrlboxCapturer(object):
                 upload_to_s3(
                     self.s3_client, local_path, self.s3_bucket_name, s3_object_name, metadata_dict
                 )
+                as_jpeg = convert_to_jpeg(local_path, jpeg_local_path)
+                upload_to_s3(
+                    self.s3_client,
+                    jpeg_local_path,
+                    self.s3_bucket_name,
+                    jpeg_s3_object_name,
+                    metadata_dict,
+                    'image/jpeg'
+                )
                 # we don't really care how efficient this is, it's not blocking anything
                 # upload_to_s3(local_path)
-                logger.info('Done with {}, saved to {}'.format(website, local_path))
+                logger.info('Done with {}, saved to {} and {}'.format(website, local_path, jpeg_local_path))
                 os.remove(local_path)
-                logger.info('And now removed from local path {}'.format(local_path))
+                os.remove(jpeg_local_path)
+                logger.info('And now removed from local path {} and {}'.format(local_path, jpeg_local_path))
             else:
                 logger.info('Not actually saving to S3, would have saved to {}'.format(s3_object_name))
             time.sleep(5)
