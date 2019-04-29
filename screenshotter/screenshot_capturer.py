@@ -53,7 +53,9 @@ class UrlboxCapturer(object):
                     'url': website,
                     'delay': 5000,
                     'ttl': 1 * 60,
-                    'full_page': True,
+                    # TODO - figure out why full page screenshots seem to have a higher error
+                    # rate, then re-enable
+                    # 'full_page': True,
                 })
 
                 if not os.path.exists(self.destination_dir):
