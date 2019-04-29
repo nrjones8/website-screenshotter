@@ -48,61 +48,64 @@ class UrlboxCapturer(object):
         now_dt = datetime.datetime.now(datetime.timezone.utc)
 
         for website in self.websites:
-            url = self._build_urlbox_url({
-                'url': website,
-                'delay': 5000,
-                'ttl': 1 * 60,
-                'full_page': True,
-            })
+            try:
+                url = self._build_urlbox_url({
+                    'url': website,
+                    'delay': 5000,
+                    'ttl': 1 * 60,
+                    'full_page': True,
+                })
 
-            if not os.path.exists(self.destination_dir):
-                os.makedirs(self.destination_dir)
-            now = time.time()
-            object_template_data = {
-                'org': website,
-                'year': now_dt.year,
-                'month': now_dt.month,
-                'day': now_dt.day,
-                'hour': now_dt.hour,
-                'minute': now_dt.minute
-            }
-            # TODO - fix timezone!
-            s3_object_name = S3_OBJECT_TEMPLATE.format(**object_template_data)
-            jpeg_s3_object_name = s3_object_name.replace('.png', '.jpeg')
+                if not os.path.exists(self.destination_dir):
+                    os.makedirs(self.destination_dir)
+                now = time.time()
+                object_template_data = {
+                    'org': website,
+                    'year': now_dt.year,
+                    'month': now_dt.month,
+                    'day': now_dt.day,
+                    'hour': now_dt.hour,
+                    'minute': now_dt.minute
+                }
+                # TODO - fix timezone!
+                s3_object_name = S3_OBJECT_TEMPLATE.format(**object_template_data)
+                jpeg_s3_object_name = s3_object_name.replace('.png', '.jpeg')
 
-            # change thisss
-            local_path = '{}/{}_{}.png'.format(self.destination_dir, website, now)
-            jpeg_local_path = local_path.replace('.png', '.jpeg')
-            # this is a janky way to do it, but S3 doesn't have built-in support for streaming large
-            # files from memory to S3. This package seems to do it:
-            # https://github.com/RaRe-Technologies/smart_open
-            # but we can also just download the damn image, then delete the file after we're done
-            self._download_single_screenshot(url, local_path)
+                # change thisss
+                local_path = '{}/{}_{}.png'.format(self.destination_dir, website, now)
+                jpeg_local_path = local_path.replace('.png', '.jpeg')
+                # this is a janky way to do it, but S3 doesn't have built-in support for streaming large
+                # files from memory to S3. This package seems to do it:
+                # https://github.com/RaRe-Technologies/smart_open
+                # but we can also just download the damn image, then delete the file after we're done
+                self._download_single_screenshot(url, local_path)
 
-            logger.info('Downloaded {} to {}'.format(website, local_path))
-            metadata_dict = object_template_data.copy()
-            metadata_dict.update({
-                'exact_time_ms': now
-            })
-            if self.write_to_s3:
-                upload_to_s3(
-                    self.s3_client, local_path, self.s3_bucket_name, s3_object_name, metadata_dict
-                )
-                as_jpeg = convert_to_jpeg(local_path, jpeg_local_path)
-                upload_to_s3(
-                    self.s3_client,
-                    jpeg_local_path,
-                    self.s3_bucket_name,
-                    jpeg_s3_object_name,
-                    metadata_dict,
-                    'image/jpeg'
-                )
-                # we don't really care how efficient this is, it's not blocking anything
-                # upload_to_s3(local_path)
-                logger.info('Done with {}, saved to {} and {}'.format(website, local_path, jpeg_local_path))
-                os.remove(local_path)
-                os.remove(jpeg_local_path)
-                logger.info('And now removed from local path {} and {}'.format(local_path, jpeg_local_path))
-            else:
-                logger.info('Not actually saving to S3, would have saved to {}'.format(s3_object_name))
-            time.sleep(5)
+                logger.info('Downloaded {} to {}'.format(website, local_path))
+                metadata_dict = object_template_data.copy()
+                metadata_dict.update({
+                    'exact_time_ms': now
+                })
+                if self.write_to_s3:
+                    upload_to_s3(
+                        self.s3_client, local_path, self.s3_bucket_name, s3_object_name, metadata_dict
+                    )
+                    as_jpeg = convert_to_jpeg(local_path, jpeg_local_path)
+                    upload_to_s3(
+                        self.s3_client,
+                        jpeg_local_path,
+                        self.s3_bucket_name,
+                        jpeg_s3_object_name,
+                        metadata_dict,
+                        'image/jpeg'
+                    )
+                    # we don't really care how efficient this is, it's not blocking anything
+                    # upload_to_s3(local_path)
+                    logger.info('Done with {}, saved to {} and {}'.format(website, local_path, jpeg_local_path))
+                    os.remove(local_path)
+                    os.remove(jpeg_local_path)
+                    logger.info('And now removed from local path {} and {}'.format(local_path, jpeg_local_path))
+                else:
+                    logger.info('Not actually saving to S3, would have saved to {}'.format(s3_object_name))
+                time.sleep(5)
+            except Exception as e:
+                logger.error('Exception when trying to process {}, going to continue. Error: {}'.format(website, str(e)))
