@@ -52,6 +52,7 @@ class UrlboxCapturer(object):
                 'url': website,
                 'delay': 5000,
                 'ttl': 1 * 60,
+                'full_page': True,
             })
 
             if not os.path.exists(self.destination_dir):
