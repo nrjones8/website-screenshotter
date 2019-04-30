@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 S3_OBJECT_TEMPLATE = 'raw-screenshots/{org}/{year}/{month}/{day}/{hour}/{minute}/screenshot.png'
 
 class UrlboxCapturer(object):
-    URL_TEMPLATE = 'https://api.urlbox.io/v1/{api_key}/{generated_token}/{format}?{query_string}'
+    URL_TEMPLATE = 'https://api-direct.urlbox.io/v1/{api_key}/{generated_token}/{format}?{query_string}'
 
     def __init__(self, api_key, api_secret, websites, destination_dir, s3_client, s3_bucket_name, write_to_s3, s3_object_template=S3_OBJECT_TEMPLATE):
         self.api_key = api_key
@@ -49,15 +49,6 @@ class UrlboxCapturer(object):
 
         for website in self.websites:
             try:
-                url = self._build_urlbox_url({
-                    'url': website,
-                    'delay': 5000,
-                    'ttl': 1 * 60,
-                    # TODO - figure out why full page screenshots seem to have a higher error
-                    # rate, then re-enable
-                    # 'full_page': True,
-                })
-
                 if not os.path.exists(self.destination_dir):
                     os.makedirs(self.destination_dir)
                 now = time.time()
@@ -76,13 +67,21 @@ class UrlboxCapturer(object):
                 # change thisss
                 local_path = '{}/{}_{}.png'.format(self.destination_dir, website, now)
                 jpeg_local_path = local_path.replace('.png', '.jpeg')
+                url = self._build_urlbox_url({
+                    'url': website,
+                    'delay': 5000,
+                    'ttl': 1 * 60,
+                    'full_page': True,
+                })
+                before = time.time()
                 # this is a janky way to do it, but S3 doesn't have built-in support for streaming large
                 # files from memory to S3. This package seems to do it:
                 # https://github.com/RaRe-Technologies/smart_open
                 # but we can also just download the damn image, then delete the file after we're done
                 self._download_single_screenshot(url, local_path)
+                screenshot_capture_time = time.time() - before
 
-                logger.info('Downloaded {} to {}'.format(website, local_path))
+                logger.info('Downloaded {} to {}. Took {} seconds'.format(website, local_path, screenshot_capture_time))
                 metadata_dict = object_template_data.copy()
                 metadata_dict.update({
                     'exact_time_ms': now
@@ -108,6 +107,7 @@ class UrlboxCapturer(object):
                     logger.info('And now removed from local path {} and {}'.format(local_path, jpeg_local_path))
                 else:
                     logger.info('Not actually saving to S3, would have saved to {}'.format(s3_object_name))
+                logger.info('-------------------')
                 time.sleep(5)
             except Exception as e:
                 logger.error('Exception when trying to process {}, going to continue. Error: {}'.format(website, str(e)))
