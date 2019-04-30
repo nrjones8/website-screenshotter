@@ -28,7 +28,7 @@ def upload_to_s3(s3_client, local_path, bucket, object_name, metadata={}, conten
     if response is None or response.get('ETag', None) is None:
         logger.info('No response attempting to put {}, continuing...'.format(object_name))
     else:
-        logger.info('Cool, object {} to bucket {}'.format(object_name, bucket))
+        logger.info('Cool, object s3://{}/{}'.format(bucket, object_name))
 
 def parse_object_name(object_name):
     """
