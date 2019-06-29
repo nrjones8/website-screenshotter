@@ -36,7 +36,10 @@ Some screenshots are flakey, and occasionally the screenshotting process fails. 
 There is unfortunately a gap in data from 2/14 until 2/15. A botched deploy meant the cronjob wasn't running for a day. If you are a prospective employer, please know that I monitor real production systems more carefully!
 
 ## Where is this data being used?
-There are many different ways you could use this archive! If you do use it, please let me know so I can mention your project here.
+There are many different ways you could use this archive! If you do use it, please let me know so I can mention your project here. So far, the archive has been used by:
+
+* [Storybench](http://www.storybench.org/fox-news-obsession-with-aoc-crowded-out-2020-candidate-announcements/), to highlight Fox News's constant coverage of AOC.
+* [The News Homepage Archive](https://nrjones8.github.io/news-archive-explorer/#/), which displays the screenshots by site and date in a browsable interface.
 
 ## Future work, improvements
 The biggest shortcoming of this archive is an inability to search the actual text of headlines - there are only images. While it's possible to OCR on existing images and get _some_ text data, the real, better solution would be to capture the structured data on a homepage using something [like Selenium](https://www.seleniumhq.org/) rather than just taking a screenshot.
