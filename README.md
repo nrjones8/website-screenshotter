@@ -33,7 +33,8 @@ Screenshots are available at every hour starting from January 1, 2019. Currently
 Some screenshots are flakey, and occasionally the screenshotting process fails. If you'd like to report those issues, please open a [Github issue](https://github.com/nrjones8/website-screenshotter/issues) - this repo will make note of specific time / website issues for any future users. There is unfortunately no way to re-capture those screenshots via this archive, but the interested reader may have luck with [The Internet Archive](https://archive.org/web/).
 
 ## Known issues, missing data
-There is unfortunately a gap in data from 2/14 until 2/15. A botched deploy meant the cronjob wasn't running for a day. If you are a prospective employer, please know that I monitor real production systems more carefully!
+* There is unfortunately a gap in data from 2/14/2019 until 2/15/2019. A botched deploy meant the cronjob wasn't running for a day. If you are a prospective employer, please know that I monitor real production systems more carefully!
+* Before April 30, 2019, all screenshots were made up only of one-screen's worth of screenshot. That is, they were not scrollable - any content below the "fold" of the front page was not captured. After April 30, full-sized, scrollable screenshots are available. See the "full_page" argument in Urlbox's [documentation](https://urlbox.io/docs) for more detail.
 
 ## Where is this data being used?
 There are many different ways you could use this archive! If you do use it, please let me know so I can mention your project here. So far, the archive has been used by:
