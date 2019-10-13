@@ -40,6 +40,7 @@ class UrlboxCapturer(object):
     def _download_single_screenshot(self, remote_url, local_path):
         # thanks http://stackoverflow.com/a/18043472
         response = requests.get(remote_url, stream=True)
+        # TODO log response
         with open(local_path, 'wb') as out_file:
             shutil.copyfileobj(response.raw, out_file)
 
@@ -60,11 +61,10 @@ class UrlboxCapturer(object):
                     'hour': now_dt.hour,
                     'minute': now_dt.minute
                 }
-                # TODO - fix timezone!
+
                 s3_object_name = S3_OBJECT_TEMPLATE.format(**object_template_data)
                 jpeg_s3_object_name = s3_object_name.replace('.png', '.jpeg')
 
-                # change thisss
                 local_path = '{}/{}_{}.png'.format(self.destination_dir, website, now)
                 jpeg_local_path = local_path.replace('.png', '.jpeg')
                 url = self._build_urlbox_url({
@@ -91,6 +91,8 @@ class UrlboxCapturer(object):
                         self.s3_client, local_path, self.s3_bucket_name, s3_object_name, metadata_dict
                     )
                     as_jpeg = convert_to_jpeg(local_path, jpeg_local_path)
+                    # This is slow, but we don't really care how efficient it is, since it's not
+                    # blocking anything
                     upload_to_s3(
                         self.s3_client,
                         jpeg_local_path,
@@ -99,8 +101,6 @@ class UrlboxCapturer(object):
                         metadata_dict,
                         'image/jpeg'
                     )
-                    # we don't really care how efficient this is, it's not blocking anything
-                    # upload_to_s3(local_path)
                     logger.info('Done with {}, saved to {} and {}'.format(website, local_path, jpeg_local_path))
                     os.remove(local_path)
                     os.remove(jpeg_local_path)

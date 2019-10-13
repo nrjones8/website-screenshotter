@@ -7,6 +7,8 @@ from news_orgs import WEBSITES
 from s3_uploader import get_s3_pathes_for_obj_prefix, upload_to_s3
 
 if __name__ == '__main__':
+    # 12,459 backfilled
+    # 620 failed; these were bad pngs to begin with
     s3_client = boto3.client('s3')
     bucket = 'news-screenshots-bucket'
     s3_path_prefixes = []

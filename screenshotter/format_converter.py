@@ -38,6 +38,7 @@ def convert_from_s3_pngs(s3_client, bucket_name, source_object_name):
             metadata=jpeg_metadata,
             content_type='image/jpeg'
         )
+        # TODO - use a logger
         print('{} was source'.format(source_object_name))
         print('{} was the new path'.format(new_object_name))
     except e:
