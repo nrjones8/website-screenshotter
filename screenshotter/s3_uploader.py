@@ -30,29 +30,6 @@ def upload_to_s3(s3_client, local_path, bucket, object_name, metadata={}, conten
     else:
         logger.info('Cool, object s3://{}/{}'.format(bucket, object_name))
 
-def parse_object_name(object_name):
-    """
-    object_name should look like 'wsj.com_1502568926.67.png', i.e.
-    '{org}_{timestamp}.png'
-
-    Return (name of news org, datetime of the screenshot)
-    """
-    # this is ugly and a little confusing, but will let us use this function again if the object
-    # name is actually a full path
-    if '/' in object_name:
-        object_name = object_name.split('/')[-1]
-
-    parts = object_name.split('_')
-
-    if len(parts) != 2:
-        logger.info('Having trouble with object named {}'.format(object_name))
-        return None, None
-    news_org = parts[0]
-    timestamp = float(parts[1].split('.')[0])
-    as_datetime = datetime.datetime.fromtimestamp(timestamp, UTC)
-
-    return news_org, as_datetime
-
 def get_s3_pathes_for_obj_prefix(s3_client, bucket, object_prefix):
     """
     s3_client
