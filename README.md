@@ -34,6 +34,7 @@ Some screenshots are flakey, and occasionally the screenshotting process fails. 
 
 ## Known issues, missing data
 * There is unfortunately a gap in data from 2/14/2019 until 2/15/2019. A botched deploy meant the cronjob wasn't running for a day. If you are a prospective employer, please know that I monitor real production systems more carefully!
+* There is another gap in data from 10/18/2020 - 10/25/2020 (about a week) - this is a particularly unfortuante time to be missing screenshots, but has been fixed.
 * Before April 30, 2019, all screenshots were made up only of one-screen's worth of screenshot. That is, they were not scrollable - any content below the "fold" of the front page was not captured. After April 30, full-sized, scrollable screenshots are available. See the "full_page" argument in Urlbox's [documentation](https://urlbox.io/docs) for more detail.
 
 ## Where is this data being used?
